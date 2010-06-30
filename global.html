@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en-us">
+<head>
+	<title>Live CSS Editor</title>	
+	<script src="jquery-1.4.2.min.js"></script>
+
+  <script type="text/javascript" charset="utf-8">
+  
+
+    var enabled = false;
+    
+    safari.application.addEventListener("message",handleMessage,false);
+    
+
+    function handleMessage(msgEvent) {
+      var messageName = msgEvent.name;
+      var messageData = msgEvent.message;
+      if (messageName === "enabled") { 
+        if (messageData == true){
+          enabled = true;
+        }
+        else{
+          enabled = false;
+        }
+      }
+    }
+  
+  
+  
+    function respondToClick(e) {
+      alert(enabled);
+      if (enabled != true)
+      {
+        url = safari.application.activeBrowserWindow.activeTab.url;
+        $.getJSON("http://backtweets.com/search.json?key=a25c535a828005b2ff05&q=" + url,
+        function(json){
+          safari.application.activeBrowserWindow.activeTab.page.dispatchMessage("TweetData", json );
+        });
+      }
+
+      else
+      {
+        safari.application.activeBrowserWindow.activeTab.page.dispatchMessage("TwitterReactions", "stop");
+      }
+
+    }
+
+    safari.application.addEventListener("command", respondToClick, false);
+    
+  </script>
+</head>
+<body>
+
+</body>
+</html>
